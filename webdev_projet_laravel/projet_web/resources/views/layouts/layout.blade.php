@@ -3,7 +3,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Liste des utilisateurs</title>
+    <title>Liste des users</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
@@ -29,34 +29,35 @@
             max-width: 900px;
             margin: 2rem auto;
             padding: 0 1rem;
+            justify-content: center;
         }
 
-        .utilisateur-container {
+        .user-container {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
 
-        .utilisateur-card {
+        .user-card {
             background-color: #ffffff;
             padding: 1.25rem 1.5rem;
             border-radius: 0.75rem;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .utilisateur-card h2 {
+        .user-card h2 {
             margin-top: 0;
             margin-bottom: 0.5rem;
             font-size: 1.3rem;
         }
 
-        .utilisateur-meta {
+        .user-meta {
             font-size: 0.85rem;
             color: #6b7280;
             margin-bottom: 0.75rem;
         }
 
-        .utilisateur-content {
+        .user-content {
             margin: 0;
             line-height: 1.6;
         }

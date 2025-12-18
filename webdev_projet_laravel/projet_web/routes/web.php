@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\UtilisateurController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
-Route::prefix('utilisateur')->group(function(){
-    Route::get('/', [UtilisateurController::class, 'index'])->name('utilisateur.index');
+Route::prefix('user')->group(function(){
+    Route::get('/', [UserController::class, 'index'])->name('user.index');
 });
