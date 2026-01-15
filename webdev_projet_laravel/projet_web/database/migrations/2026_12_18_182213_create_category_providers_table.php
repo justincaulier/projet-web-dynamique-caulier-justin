@@ -13,14 +13,15 @@ return new class extends Migration
     {
         if(!Schema::hasTable('category_providers')){
             Schema::create('category_providers', function (Blueprint $table) {
-                $table->id();
-                $table->timestamps();
-                $table->foreignId('category_id')->constrained();
-                $table->foreignId('user_id')->constrained();
+                $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->primary(['category_id', 'user_id']);
             });
+
         }
 
     }
+
 
     /**
      * Reverse the migrations.

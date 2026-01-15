@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Laravel\Socialite\Socialite;
+
+class GoogleAuthController extends Controller
+{
+    public function redirect(){
+        return Socialite::driver('google')->redirect();
+    }
+    public function callback(){
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+}

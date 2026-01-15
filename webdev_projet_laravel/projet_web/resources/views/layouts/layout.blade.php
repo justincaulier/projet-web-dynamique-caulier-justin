@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Liste des users</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    @vite(['ressources/css/app.css', 'ressources/js/app.js'])
     <style>
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
