@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,29 +20,42 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $table = 'utilisateurs';
+    protected $table = 'users';
     public $timestamps = false;
     protected $fillable = [
         'name',
         'surname',
-        'address',
+        'addresses',
         'email',
         'email_verified_at',
         'password',
+        'provider',
+        'provider_id',
         'tva',
         'telephone',
         'login_attempts',
         'language',
         'website',
-        'rôle',
+        'role',
         'is_banned',
         'registered_at',
         'registration_confirmed',
         'newsletter'
     ];
     //Relations avec la table adresse
-    public function adresse():HasMany{
-        return $this->hasMany(Adresse::class);
+    public function adresse(): BelongsTo
+    {
+        return $this->belongsTo(Adresse::class, 'address_id');
+    }
+    //Relations avec la table pivot
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Category::class,
+            'category_providers', // nom de la table pivot
+            'user_id',            // FK dans la pivot vers User
+            'category_id'         // FK dans la pivot vers Category
+        );
     }
     /**
      * The attributes that should be hidden for serialization.
