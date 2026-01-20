@@ -26,7 +26,7 @@ return new class extends Migration
                     ->cascadeOnDelete();
 
                 $table->string('tva', 20)->nullable();
-                $table->string('telephone');
+                $table->string('telephone')->nullable();
                 $table->unsignedInteger('login_attempts')->default(0);
                 $table->string('language')->default('fr');
                 $table->string('website')->nullable();

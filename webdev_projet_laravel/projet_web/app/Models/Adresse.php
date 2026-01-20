@@ -3,18 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Adresse extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
 
-
-    public $timestamps = false;
     protected $table = 'adresses';
+    public $timestamps = false;
+
     protected $fillable = [
         'street',
         'number',
@@ -23,10 +21,10 @@ class Adresse extends Model
         'country',
         'box'
     ];
-    //Relation avec la table user
+
+    // Relation avec la table users
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'address_id');
     }
-
 }

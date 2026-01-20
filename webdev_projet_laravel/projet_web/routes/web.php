@@ -1,24 +1,23 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
+// Page d'accueil (home)
+Route::get('/', [CategoryController::class, 'index'])->name('home');
+
+// Users
 Route::prefix('user')->group(function(){
     Route::get('/', [UserController::class, 'index'])->name('user.index');
-    Route::get('/search', [UserController::class, 'search'])->name('user.search');
-    Route::get('/{id}', [UserController::class, 'show'])->name('user.show');
-
+    Route::get('/{id}', [UserController::class, 'show'])->name('user.show'); // mettre en dernier
 });
-//Route pour afficher les différentes catégories sur la page home
-Route::get('/', [CategoryController::class, 'index'])->name('home');
-// Page d'une catégorie
+
+// Catégories
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
 
-//Route pour l'authentification google
-Route::prefix('auth')->group(function(){
-    Route::prefix('google')->group(function(){
-        Route::get('/callback')->name('google.callback');
-        Route::get('/redirect')->name('google.redirect');
-    });
+// Auth Google
+Route::prefix('auth/google')->group(function(){
+    Route::get('/callback')->name('google.callback');
+    Route::get('/redirect')->name('google.redirect');
 });

@@ -2,30 +2,25 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Enums\UserRole;
+use Laravel\Scout\Searchable;
+
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Searchable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $table = 'users';
     public $timestamps = false;
+
     protected $fillable = [
         'name',
         'surname',
-        'addresses',
+        'address_id', // ⚡ important : FK vers adresses
         'email',
         'email_verified_at',
         'password',
@@ -42,36 +37,29 @@ class User extends Authenticatable
         'registration_confirmed',
         'newsletter'
     ];
-    //Relations avec la table adresse
-    public function adresse(): BelongsTo
+
+    // Relation avec la table adresse
+    public function address(): BelongsTo
     {
         return $this->belongsTo(Adresse::class, 'address_id');
     }
-    //Relations avec la table pivot
+
+    // Relation avec la table pivot categories
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(
             Category::class,
-            'category_providers', // nom de la table pivot
-            'user_id',            // FK dans la pivot vers User
-            'category_id'         // FK dans la pivot vers Category
+            'category_providers',
+            'user_id',
+            'category_id'
         );
     }
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $casts = [
         'role' => UserRole::class,
         'email_verified_at' => 'datetime',

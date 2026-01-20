@@ -2,48 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Repositories\CategoryRepository;
-use app\Repositories\UserRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-
 class UserController extends Controller
 {
-    public function index(): View|JsonResponse
+    protected UserRepository $userRepo;
+    protected CategoryRepository $categoryRepo;
+
+    public function __construct(UserRepository $userRepo, CategoryRepository $categoryRepo)
     {
-        try {
-            $users = app(UserRepository::class)->index();
-            return view('user.index', compact('users'));
-        } catch (\Exception $e) {
-            return response()->json(["error" => $e->getMessage()]);
-        }
+        $this->userRepo = $userRepo;
+        $this->categoryRepo = $categoryRepo;
     }
-    public function show($id): View|JsonResponse
+
+    /**
+     * Liste complète des providers (sans recherche).
+     */
+    public function index(Request $request)
     {
-        try {
-            $user = app(UserRepository::class)->show($id);
+        $users = $this->userRepo->index(3); // ✔ paginator
+        $categories = $this->categoryRepo->getAll();
+        $sliderImages = ['bienetre1.jpg','bienetre2.jpg','bienetre3.jpg'];
+        $query = '';
 
-            return view('users.show', compact('user'));
-        }catch (\Exception $e) {
-            return response()->json(["error" => $e->getMessage()]);
-        }
-
+        return view('home', compact('users','categories','sliderImages','query'));
     }
-    public function search(Request $request): View|JsonResponse
-    {
-        try {
-            $sliderImages = ['bienetre1.jpg', 'bienetre2.jpg', 'bienetre2.jpg'];
-            $categories = app(CategoryRepository::class)->getAll();
-            $users = app(UserRepository::class)->search($request->get('search'));
 
-            return view('home', compact('users', 'query', 'sliderImages', 'categories'));
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
-        }
+
+
+    /**
+     * Recherche des providers avec pagination
+     */
+    public function search(Request $request): View
+    {
+        $query = $request->input('search', '');
+        $perPage = 3;
+
+        $users = $this->userRepo->search($query, $perPage);
+        $categories = $this->categoryRepo->getAll();
+        $sliderImages = ['bienetre1.jpg','bienetre2.jpg','bienetre3.jpg'];
+
+        return view('home', compact('users','categories','sliderImages','query'));
+    }
+
+    /**
+     * Affiche les providers d'une catégorie
+     */
+    public function showByCategory(int $categoryId): View
+    {
+        $users = $this->userRepo->getProvidersByCategory($categoryId, 3);
+        $categories = $this->categoryRepo->getAll();
+        $sliderImages = ['bienetre1.jpg','bienetre2.jpg','bienetre3.jpg'];
+
+        $category = $this->categoryRepo->findById($categoryId);
+
+        $query = $category->name;
+
+        return view('home', compact('users','categories','sliderImages','query'));
+    }
+
+    /**
+     * Affiche un provider
+     */
+    public function show(int $id): View
+    {
+        $user = $this->userRepo->show($id, ['address','categories']);
+        return view('users.show', compact('user'));
     }
 }
-
