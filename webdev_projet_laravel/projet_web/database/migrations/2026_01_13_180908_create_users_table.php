@@ -12,8 +12,8 @@ return new class extends Migration
 
             Schema::create('users', function (Blueprint $table) {
                 $table->id();
-                $table->string('name');
-                $table->string('surname');
+                $table->string('name')->nullable();
+                $table->string('surname')->nullable();
                 $table->string('email')->unique();
                 $table->timestamp('email_verified_at')->nullable();
                 $table->string('password')->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
                 $table->string('language')->default('fr');
                 $table->string('website')->nullable();
                 $table->string('role')->default(UserRole::USER->value);
-                $table->date('registered_at');
+                $table->date('registered_at')->default(now());
                 $table->boolean('is_banned')->default(false);
                 $table->boolean('registration_confirmed')->default(false);
                 $table->boolean('newsletter')->default(false);

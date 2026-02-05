@@ -26,6 +26,36 @@ class UserRepository
             ->orderBy('name', 'asc')
             ->paginate($perPage);
     }
+    //fonction pour rechercher un user via son email
+    public function findByEmail(string $email): ?User
+    {
+        return $this->model->where('email', $email)->first();
+    }
+    // Fonction pour rechercher un provider et son id
+    public function findByProviderAndProviderId(string $provider, string $providerId): ?User
+    {
+        return $this->model
+            ->where('provider', $provider)
+            ->where('provider_id', $providerId)
+            ->first();
+    }
+
+    //fonction pour créer un user pour l'authentification
+    public function createUserForOAuth(string $name, string $email, string $provider, string $providerId): User
+    {
+        // Récupère le dernier google_id utilisé
+        $lastGoogleId = $this->model->whereNotNull('google_id')->max('google_id') ?? 0;
+
+        return $this->model::create([
+            'name' => $name,
+            'email' => $email,
+            'provider' => $provider,
+            'provider_id' => $providerId,
+            'google_id' => $lastGoogleId + 1, // incrément interne
+            'registered_at' => now(),
+            'role' => 'USER',
+        ]);
+    }
 
     /**
      * Recherche des providers par nom, ville, code postal ou catégorie, avec pagination.

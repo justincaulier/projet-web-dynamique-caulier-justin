@@ -26,6 +26,7 @@ class User extends Authenticatable
         'password',
         'provider',
         'provider_id',
+        'google_id',
         'tva',
         'telephone',
         'login_attempts',

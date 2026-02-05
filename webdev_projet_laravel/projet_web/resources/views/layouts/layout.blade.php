@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Liste des users</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @vite(['ressources/css/app.css', 'ressources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -69,6 +69,10 @@
             border-radius: 0.75rem;
             border: 1px solid #fbbf24;
             color: #92400e;
+        }
+        img {
+            height: 150px;
+            width: 150px;
         }
     </style>
 </head>
