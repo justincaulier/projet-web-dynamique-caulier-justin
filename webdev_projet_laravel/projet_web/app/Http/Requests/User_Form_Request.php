@@ -23,7 +23,7 @@ class User_Form_Request extends FormRequest
     {
         return [
             "email" => "required|string|email|unique:users,email",
-            "password" => "required|string|min:8",
+            "password" => "required|string|min:8"|"regex:/^(?=.*[A-Za-z])(?=.*\d).+$/",
             "confirm-password" => "required|string|min:8|same:password",
         ];
     }
@@ -32,6 +32,7 @@ class User_Form_Request extends FormRequest
             "email.required" => "L'email est obligatoire",
             "email.unique"=>"L email existe déjà",
             "password.required" => "Le mot de passe est obligatoire",
+            "password.regex" => "Le mot de passe doit contenir au moins une lettre et un chiffre",
             "confirm-password.required" => "Les mot de passes ne sont pas identiques",
 
         ];

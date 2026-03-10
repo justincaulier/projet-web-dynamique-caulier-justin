@@ -8,6 +8,7 @@ use App\Http\Requests\User_Form_Request;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Mail\CompleteRegistrationMail;
 use App\Models\Adresse;
+use App\Models\Category;
 use App\Models\ProviderPhoto;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -81,55 +82,6 @@ class UserController extends Controller
             ->with('success', 'Utilisateur créé. Un mail a été envoyé pour compléter l’inscription !');
     }
 
-    // Affiche le formulaire de complétion (via email)
-    // GET /complete-registration/{user}
-    public function showCompleteRegistration(User $user)
-    {
-        if ($user->registration_confirmed) {
-            return redirect()->route('home')
-                ->with('info', 'Inscription déjà complétée.');
-        }
-
-        return view('auth.complete-registration', compact('user'));
-    }
-
-// POST /complete-registration/{user}
-    public function storeCompleteRegistration(CompleteRegistrationRequest $request, User $user)
-    {
-        $data = $request->validated();
-        unset($data['confirm-password']);
-
-        $user->password = bcrypt($data['password']);
-        $user->role = $request->has('is_provider') ? 'PROVIDER' : 'USER';
-
-        if ($user->role === 'PROVIDER') {
-            $user->tva = $data['tva'] ?? null;
-            $user->telephone = $data['telephone'] ?? null;
-            $user->website = $data['website'] ?? null;
-            $user->description = $data['description'] ?? null;
-
-            // Adresse
-            $addressData = array_filter($request->only(['street','number','box','city','postcode','country']));
-            if (!empty($addressData)) {
-                $address = Adresse::firstOrCreate($addressData);
-                $user->address_id = $address->id;
-            }
-
-            // Photo
-            if ($request->hasFile('photo')) {
-                $path = $request->file('photo')->store('providers_photos','public');
-                $user->avatar = basename($path);
-            }
-        }
-
-        $user->registration_confirmed = true;
-        $user->remember_token = Str::random(60);
-        $user->save();
-
-        return redirect()->route('home')
-            ->with('success', 'Inscription complétée avec succès ! Vous pouvez maintenant vous connecter.');
-    }
-
     /**
      * Affiche un utilisateur
      */
@@ -150,9 +102,15 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            return $user->role === UserRole::PROVIDER
-                ? view('profile.provider', compact('user'))
-                : view('profile.user', compact('user'));
+
+            if ($user->role === UserRole::PROVIDER) {
+                // Récupérer toutes les catégories disponibles pour le select
+                $categories = Category::all();
+                return view('profile.provider', compact('user', 'categories'));
+            }
+
+            return view('profile.user', compact('user'));
+
         } catch (\Exception $e) {
             abort(500, 'Erreur lors du chargement du profil : '.$e->getMessage());
         }
@@ -207,6 +165,12 @@ class UserController extends Controller
 
                 $user->address_id = $address->id;
                 $user->save();
+            }
+
+            // Synchronisation des catégories prestataire
+            if ($user->role === UserRole::PROVIDER) {
+                $categoryIds = $request->input('categories', []);
+                $user->categories()->sync($categoryIds);
             }
 
 

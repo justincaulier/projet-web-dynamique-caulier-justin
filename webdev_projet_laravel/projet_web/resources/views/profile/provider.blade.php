@@ -45,6 +45,21 @@
                 @enderror
             </div>
 
+            {{-- Description --}}
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+
+                <input type="text"
+                       name="description"
+                       value="{{ old('description', $user->description) }}"
+                       class="form-control">
+
+                @error('description')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
 
             {{-- TVA --}}
             <div class="mb-3">
@@ -137,7 +152,7 @@
 
 
             <hr>
-
+            {{-- Gestion des photos supplémentaires --}}
             <h4>Photos supplémentaires</h4>
 
             <div class="mb-3">
@@ -165,6 +180,19 @@
                     </div>
                 @endif
 
+            </div>
+            {{-- Gestion des catégories --}}
+            <div class="mb-3">
+                <label>Services proposés :</label>
+                <select name="categories[]" class="form-select" multiple>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}"
+                                @if(in_array($category->id, $user->categories->pluck('id')->toArray())) selected @endif>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <small class="form-text text-muted">Ctrl+clic pour sélectionner ou désélectionner plusieurs services</small>
             </div>
 
 
