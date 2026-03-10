@@ -64,21 +64,27 @@ class UserRepository
     {
         $builder = $this->baseProviderQuery();
 
-        if (!empty($query)) {
+        // 🔹 Nettoyage de la recherche
+        $query = trim((string) $query);
+
+        if ($query !== '') {
             $builder->where(function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%")
-                    ->orWhereHas('address', fn($q2) =>
-                    $q2->where('city', 'LIKE', "%{$query}%")
-                        ->orWhere('postcode', 'LIKE', "%{$query}%")
-                    )
-                    ->orWhereHas('categories', fn($q3) =>
-                    $q3->where('name', 'LIKE', "%{$query}%")
-                    );
+                    ->orWhere('surname', 'LIKE', "%{$query}%")
+                    ->orWhereHas('address', function ($q2) use ($query) {
+                        $q2->where('city', 'LIKE', "%{$query}%")
+                            ->orWhere('postcode', 'LIKE', "%{$query}%");
+                    })
+                    ->orWhereHas('categories', function ($q3) use ($query) {
+                        $q3->where('name', 'LIKE', "%{$query}%");
+                    });
             });
         }
 
         return $builder->paginate($perPage)->withQueryString();
     }
+
+
 
     /**
      * Liste des providers d'une catégorie, avec pagination.
@@ -125,4 +131,10 @@ class UserRepository
         $user = $this->show($id);
         $user->delete();
     }
+    public function findByIdOrFail(int $id): User
+    {
+        return User::findOrFail($id);
+    }
+
+
 }

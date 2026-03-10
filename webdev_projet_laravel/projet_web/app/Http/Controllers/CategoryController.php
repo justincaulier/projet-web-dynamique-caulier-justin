@@ -18,21 +18,30 @@ class CategoryController extends Controller
     public function index(): View|JsonResponse
     {
         try {
-            $categories = app(CategoryRepository::class)->getAll();
+            $query = request('search', '');
 
-            // Slider dynamique depuis public/images
+            $categories = $this->categoryRepository->getAll();
+
+            $users = $this->userRepository->search($query, 3);
+
             $sliderImages = [
                 'bienetre1.jpg',
                 'bienetre2.jpg',
                 'bienetre3.jpg',
             ];
 
-            return view('home', compact('categories', 'sliderImages'));
-        }catch (\Exception $e) {
+            return view('home', compact(
+                'categories',
+                'sliderImages',
+                'users',
+                'query'
+            ));
+
+        } catch (\Exception $e) {
             return response()->json(["error" => $e->getMessage()]);
         }
-
     }
+
     public function show(int $id): View|JsonResponse
     {
         try {

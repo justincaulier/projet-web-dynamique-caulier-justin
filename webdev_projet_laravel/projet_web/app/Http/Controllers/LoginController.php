@@ -24,7 +24,10 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
     }
-
+    public function showLoginForm()
+    {
+        return view('auth.login'); // ton blade login
+    }
     public function logout(Request $request)
     {
         Auth::logout();

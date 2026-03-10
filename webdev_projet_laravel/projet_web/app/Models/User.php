@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, Searchable;
 
     protected $table = 'users';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'name',
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'password',
         'provider',
         'provider_id',
+        'avatar',
         'google_id',
         'tva',
         'telephone',
@@ -54,6 +56,10 @@ class User extends Authenticatable
             'user_id',
             'category_id'
         );
+    }
+    public function photos():HasMany
+    {
+        return $this->hasMany(ProviderPhoto::class);
     }
 
     protected $hidden = [

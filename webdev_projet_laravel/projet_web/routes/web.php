@@ -2,27 +2,28 @@
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GoogleAuthController;
-use App\Http\Controllers\RegistrationCompletionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegistrationCompletionController;
 use App\Http\Controllers\CategoryController;
-use App\Mail\TestMail;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
-// Page d'accueil (home)
+// Page d'accueil
 Route::get('/', [CategoryController::class, 'index'])->name('home');
 
 // Users
-Route::prefix('user')->group(function(){
+Route::prefix('user')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('user.index');
-    //  AFFICHER le formulaire
     Route::get('/create', [UserController::class, 'create'])->name('user.create');
-
-    //  TRAITER le formulaire
     Route::post('/', [UserController::class, 'store'])->name('user.store');
-    //Afficher 1 user
     Route::get('/{id}', [UserController::class, 'show'])->name('user.show');
 });
+
+// Complétion de l’inscription via email
+Route::get('/complete-registration/{id}', [RegistrationCompletionController::class, 'show'])
+    ->name('registration.complete');
+
+Route::post('/complete-registration/{id}', [RegistrationCompletionController::class, 'store'])
+    ->name('registration.storeComplete');
 
 // Catégories
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
@@ -33,14 +34,15 @@ Route::prefix('auth/google')->group(function () {
     Route::get('/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 });
 
-// Complétion de l’inscription via email
-Route::get('/complete-registration/{id}', [RegistrationCompletionController::class, 'show'])
-    ->name('registration.complete');
-
-Route::post('/complete-registration/{id}', [RegistrationCompletionController::class, 'store']);
-
-//Route pour se connecter et se déconnecter
+// Auth standard
 Route::prefix('auth')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('loginForm');
     Route::post('/login', [LoginController::class, 'login'])->name('login');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});
+
+// Profil
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 });

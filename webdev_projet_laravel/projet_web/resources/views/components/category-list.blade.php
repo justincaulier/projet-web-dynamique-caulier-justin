@@ -1,4 +1,4 @@
-<div class="services">
+
     <h2>Nos catégories</h2>
     @forelse($categories as $category)
         <div class="category-item">
@@ -12,4 +12,4 @@
     @empty
         <p>Aucune catégorie disponible.</p>
     @endforelse
-</div>
+
