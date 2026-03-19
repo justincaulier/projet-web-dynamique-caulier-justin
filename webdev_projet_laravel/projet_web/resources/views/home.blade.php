@@ -5,7 +5,7 @@
         <div class="row vh-100">
 
             {{-- Liste des catégories --}}
-            <div class="col-2 bg-primary text-white p-3 d-flex flex-column" style="height: 100vh;">
+            <div class="col-2 bg-primary text-white p-3 d-flex flex-column" style="height: 100vh; overflow-y: auto;">
                 <h4>Catégories</h4>
                 <x-category-list :categories="$categories" />
             </div>
@@ -14,15 +14,15 @@
             <div class="col-10 bg-light d-flex flex-column p-0">
 
                 {{-- Slider --}}
-                <div class="mb-3">
+                <div class="flex-grow-1">
                     <x-slider :images="$sliderImages" />
                 </div>
 
-                {{-- Bouton S'inscrire --}}
-                <div class="px-3 mb-3 d-flex gap-2">
+                {{-- Barre de recherche + bouton S'inscrire --}}
+                <div class="px-3 py-2 d-flex gap-2 align-items-center bg-white border-top">
+                    <x-search-bar :query="$query ?? ''" class="flex-grow-1" />
                     <a href="{{ route('user.create') }}" class="btn btn-primary">S'inscrire</a>
-
-                {{-- Bouton Modifier mon profil si connecté --}}
+                </div>
                 @auth
                     <a href="{{ route('profile') }}" class="btn btn-secondary">Modifier mon profil</a>
                 @endauth

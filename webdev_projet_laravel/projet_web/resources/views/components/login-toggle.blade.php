@@ -15,22 +15,31 @@
     </button>
 
     <div id="{{ $id }}_form" class="login-hidden">
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login.submit') }}">
             @csrf
 
             <div>
                 <label>Email</label>
-                <input type="email" name="email">
+                <input type="email" name="email" value="{{ old('email') }}" required>
+                @error('email')<span style="color:red">{{ $message }}</span>@enderror
             </div>
 
             <div style="margin-top:10px;">
                 <label>Mot de passe</label>
-                <input type="password" name="password">
+                <input type="password" name="password" required>
+                @error('password')<span style="color:red">{{ $message }}</span>@enderror
             </div>
 
             <div style="margin-top:10px;">
                 <button type="submit">Connexion</button>
             </div>
+
+            @if(session('error'))
+                <div style="color:red;margin-top:10px">{{ session('error') }}</div>
+            @endif
+            @if(session('success'))
+                <div style="color:green;margin-top:10px">{{ session('success') }}</div>
+            @endif
         </form>
     </div>
 

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('postcode');
             $table->string('country');
             $table->string('box')->nullable();
+            $table->decimal('lat', 10, 7)->nullable();
+            $table->decimal('lon', 10, 7)->nullable();
         });
     }
 

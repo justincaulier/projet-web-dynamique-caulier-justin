@@ -4,22 +4,13 @@ namespace App\Repositories;
 
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
-class CategoryRepository
+class CategoryRepository extends BaseRepository
 {
-    protected Category $model;
-
-    public function __construct(Category $category)
+    public function __construct(Category $model)
     {
-        $this->model = $category;
-    }
-
-    /**
-     * Récupérer toutes les catégories
-     */
-    public function getAll(): Collection
-    {
-        return $this->model->all();
+        parent::__construct($model);
     }
 
     /**
@@ -27,7 +18,9 @@ class CategoryRepository
      */
     public function getValidated(): Collection
     {
-        return $this->model->where('is_validated', true)->get();
+        return $this->model
+            ->where('is_validated', true)
+            ->get();
     }
 
     /**
@@ -35,14 +28,27 @@ class CategoryRepository
      */
     public function getHighlighted(): Collection
     {
-        return $this->model->where('is_highlighted', true)->get();
+        return $this->model
+            ->where('is_highlighted', true)
+            ->get();
     }
-
-    /**
-     * Trouver une catégorie par ID
-     */
-    public function findById(int $id): ?Category
+    public function deleteAndTransferProviders(int $categoryId, int $newCategoryId): void
     {
-        return $this->model->findOrFail($id);
+        DB::transaction(function () use ($categoryId, $newCategoryId) {
+
+            $category = $this->show($categoryId, ['users']);
+
+            foreach ($category->users as $user) {
+
+                // retirer ancienne catégorie
+                $user->categories()->detach($categoryId);
+
+                // ajouter nouvelle catégorie
+                $user->categories()->syncWithoutDetaching([$newCategoryId]);
+            }
+
+            // supprimer catégorie
+            $category->delete();
+        });
     }
 }

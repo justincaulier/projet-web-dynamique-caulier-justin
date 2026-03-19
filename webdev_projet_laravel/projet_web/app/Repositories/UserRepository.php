@@ -6,32 +6,50 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class UserRepository
+class UserRepository extends BaseRepository
 {
-    protected User $model;
-
     public function __construct(User $model)
     {
-        $this->model = $model;
+        parent::__construct($model);
     }
 
     /**
-     * Liste complète des providers (sans pagination).
+     * Liste paginée des providers
      */
-    public function index(int $perPage = 3)
+    /**
+     * Retourne tous les utilisateurs sous forme de Collection
+     * Compatible avec la signature du BaseRepository
+     */
+    public function index(): Collection
     {
-        return $this->model
-            ->where('role', 'PROVIDER')
-            ->with('address', 'categories')
-            ->orderBy('name', 'asc')
-            ->paginate($perPage);
+        return $this->model->all();
     }
-    //fonction pour rechercher un user via son email
+
+    /**
+     * Retourne les utilisateurs paginés
+     */
+    public function paginate(int $perPage = 3): LengthAwarePaginator
+    {
+        return $this->model->paginate($perPage);
+    }
+    //Recherche user
+    public function findByIdOrFail(int $id): User
+    {
+        return $this->model->findOrFail($id);
+    }
+    /**
+     * Recherche par email
+     */
     public function findByEmail(string $email): ?User
     {
-        return $this->model->where('email', $email)->first();
+        return $this->model
+            ->where('email', $email)
+            ->first();
     }
-    // Fonction pour rechercher un provider et son id
+
+    /**
+     * Recherche OAuth
+     */
     public function findByProviderAndProviderId(string $provider, string $providerId): ?User
     {
         return $this->model
@@ -40,54 +58,66 @@ class UserRepository
             ->first();
     }
 
-    //fonction pour créer un user pour l'authentification
-    public function createUserForOAuth(string $name, string $email, string $provider, string $providerId): User
-    {
-        // Récupère le dernier google_id utilisé
-        $lastGoogleId = $this->model->whereNotNull('google_id')->max('google_id') ?? 0;
+    /**
+     * Création user OAuth
+     */
+    public function createUserForOAuth(
+        string $name,
+        string $email,
+        string $provider,
+        string $providerId
+    ): User {
 
-        return $this->model::create([
+        $lastGoogleId = $this->model
+            ->whereNotNull('google_id')
+            ->max('google_id') ?? 0;
+
+        return $this->create([
             'name' => $name,
             'email' => $email,
             'provider' => $provider,
             'provider_id' => $providerId,
-            'google_id' => $lastGoogleId + 1, // incrément interne
+            'google_id' => $lastGoogleId + 1,
             'registered_at' => now(),
             'role' => 'USER',
         ]);
     }
 
     /**
-     * Recherche des providers par nom, ville, code postal ou catégorie, avec pagination.
+     * Recherche providers (nom, ville, catégorie)
      */
     public function search(?string $query = null, int $perPage = 10): LengthAwarePaginator
     {
         $builder = $this->baseProviderQuery();
 
-        // 🔹 Nettoyage de la recherche
         $query = trim((string) $query);
 
         if ($query !== '') {
+
             $builder->where(function ($q) use ($query) {
+
                 $q->where('name', 'LIKE', "%{$query}%")
                     ->orWhere('surname', 'LIKE', "%{$query}%")
+
                     ->orWhereHas('address', function ($q2) use ($query) {
                         $q2->where('city', 'LIKE', "%{$query}%")
                             ->orWhere('postcode', 'LIKE', "%{$query}%");
                     })
+
                     ->orWhereHas('categories', function ($q3) use ($query) {
                         $q3->where('name', 'LIKE', "%{$query}%");
                     });
+
             });
         }
 
-        return $builder->paginate($perPage)->withQueryString();
+        return $builder
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
-
-
     /**
-     * Liste des providers d'une catégorie, avec pagination.
+     * Providers par catégorie
      */
     public function getProvidersByCategory(int $categoryId, int $perPage = 3): LengthAwarePaginator
     {
@@ -98,43 +128,14 @@ class UserRepository
     }
 
     /**
-     * Query de base pour les providers (avec relations et tri alphabétique)
+     * Query commune pour les providers
      */
     private function baseProviderQuery()
     {
         return $this->model
             ->where('role', 'PROVIDER')
-            ->with('address', 'categories')
+            ->with(['address','categories'])
             ->orderBy('name', 'asc');
     }
-
-    // Méthodes CRUD classiques
-    public function show(int $id, array $relations = []): User
-    {
-        return $this->model->with($relations)->findOrFail($id);
-    }
-
-    public function create(array $data): User
-    {
-        return $this->model::create($data);
-    }
-
-    public function update(int $id, array $data): User
-    {
-        $user = $this->show($id);
-        $user->update($data);
-        return $user->fresh();
-    }
-
-    public function delete(int $id): void
-    {
-        $user = $this->show($id);
-        $user->delete();
-    }
-    public function findByIdOrFail(int $id): User
-    {
-        return User::findOrFail($id);
-    }
-
 
 }

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             AdresseSeeder::class,
             UserSeeder::class,
+            AdminSeeder::class,
         ]);
     }
 }

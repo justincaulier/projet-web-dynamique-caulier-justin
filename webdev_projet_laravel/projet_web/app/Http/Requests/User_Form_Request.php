@@ -22,9 +22,9 @@ class User_Form_Request extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|string|email|unique:users,email",
-            "password" => "required|string|min:8"|"regex:/^(?=.*[A-Za-z])(?=.*\d).+$/",
-            "confirm-password" => "required|string|min:8|same:password",
+            "email" => ['required','string','email','unique:users,email'],
+            "password" => ['required','string','min:8','regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+            "confirm-password" => ['required','string','min:8','same:password'],
         ];
     }
     public function messages(): array {

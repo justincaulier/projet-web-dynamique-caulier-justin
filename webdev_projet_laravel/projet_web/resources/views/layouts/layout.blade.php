@@ -51,28 +51,9 @@
             font-size: 1.3rem;
         }
 
-        .user-meta {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 0.75rem;
-        }
-
-        .user-content {
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 2rem 1rem;
-            background-color: #fef3c7;
-            border-radius: 0.75rem;
-            border: 1px solid #fbbf24;
-            color: #92400e;
-        }
         img {
-            height: 150px;
-            width: 150px;
+            height: 600px;
+            width: 600px;
         }
     </style>
 </head>

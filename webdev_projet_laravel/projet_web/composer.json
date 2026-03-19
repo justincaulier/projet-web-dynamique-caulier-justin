@@ -13,7 +13,8 @@
         "laravel/framework": "^12.0",
         "laravel/scout": "^10.23",
         "laravel/socialite": "^5.24",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "larswiegers/laravel-maps": "^0.20.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

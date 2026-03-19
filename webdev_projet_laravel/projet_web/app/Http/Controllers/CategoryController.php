@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
@@ -10,6 +9,7 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
+
     public function __construct(
         private CategoryRepository $categoryRepository,
         private UserRepository $userRepository
@@ -18,9 +18,11 @@ class CategoryController extends Controller
     public function index(): View|JsonResponse
     {
         try {
+
             $query = request('search', '');
 
-            $categories = $this->categoryRepository->getAll();
+            // BaseRepository
+            $categories = $this->categoryRepository->index();
 
             $users = $this->userRepository->search($query, 3);
 
@@ -38,21 +40,30 @@ class CategoryController extends Controller
             ));
 
         } catch (\Exception $e) {
-            return response()->json(["error" => $e->getMessage()]);
+
+            return response()->json([
+                "error" => $e->getMessage()
+            ]);
         }
     }
 
     public function show(int $id): View|JsonResponse
     {
         try {
-            $category = $this->categoryRepository->findById($id);
+
+            // BaseRepository
+            $category = $this->categoryRepository->show($id);
 
             $users = $this->userRepository
-                ->getProvidersByCategory($category->id, 3); //  limite à 3
+                ->getProvidersByCategory($category->id, 3);
 
             return view('categories.show', compact('category', 'users'));
+
         } catch (\Exception $e) {
-            return response()->json(["error" => $e->getMessage()]);
+
+            return response()->json([
+                "error" => $e->getMessage()
+            ]);
         }
     }
 

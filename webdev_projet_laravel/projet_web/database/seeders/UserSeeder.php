@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         $categories = Category::all();
 
         // Crée 10 providers
-        User::factory()->count(10)->create()->each(function (User $user) use ($categories) {
+        User::factory()->count(20)->create()->each(function (User $user) use ($categories) {
 
             // 1 Associer une adresse
             $user->address()->associate(Adresse::factory()->create());

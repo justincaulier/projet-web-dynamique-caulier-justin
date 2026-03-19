@@ -43,8 +43,8 @@ class UserController extends Controller
     public function index(): View
     {
         try {
-            $users = $this->userRepo->index(3);
-            $categories = $this->categoryRepo->getAll();
+            $users = $this->userRepo->paginate(3);
+            $categories = $this->categoryRepo->index();
             $sliderImages = ['bienetre1.jpg','bienetre2.jpg','bienetre3.jpg'];
 
             return view('home', compact('users','categories','sliderImages'));
@@ -89,7 +89,11 @@ class UserController extends Controller
     {
         try {
             $user = $this->userRepo->show($id, ['address','categories']);
-            return view('users.show', compact('user'));
+            return view('users.show', [
+                'user' => $user,
+                'lat' => $user->address->lat ?? null,
+                'lon' => $user->address->lon ?? null
+            ]);
         } catch (\Exception $e) {
             abort(404, 'Utilisateur introuvable.');
         }
