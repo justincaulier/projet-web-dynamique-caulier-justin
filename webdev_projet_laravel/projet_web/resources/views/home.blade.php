@@ -1,79 +1,86 @@
 @extends('layouts.layout')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row vh-100">
 
-            {{-- Liste des catégories --}}
-            <div class="col-2 bg-primary text-white p-3 d-flex flex-column" style="height: 100vh; overflow-y: auto;">
-                <h4>Catégories</h4>
+    <div class="container-fluid main-layout">
+        <div class="row">
+
+            {{-- Sidebar Catégories --}}
+            <aside class="col-12 col-md-3 col-lg-3 sidebar">
                 <x-category-list :categories="$categories" />
-            </div>
+            </aside>
 
             {{-- Contenu principal --}}
-            <div class="col-10 bg-light d-flex flex-column p-0">
+            <main class="col-12 col-md-9 col-lg-9 content">
 
                 {{-- Slider --}}
-                <div class="flex-grow-1">
-                    <x-slider :images="$sliderImages" />
-                </div>
+                <x-slider :images="$sliderImages" />
 
-                {{-- Barre de recherche + bouton S'inscrire --}}
-                <div class="px-3 py-2 d-flex gap-2 align-items-center bg-white border-top">
-                    <x-search-bar :query="$query ?? ''" class="flex-grow-1" />
-                    <a href="{{ route('user.create') }}" class="btn btn-primary">S'inscrire</a>
-                </div>
-                @auth
-                    <a href="{{ route('profile') }}" class="btn btn-secondary">Modifier mon profil</a>
-                @endauth
-                </div>
-                {{-- Zone de recherche --}}
-                <div class="px-3 mb-3">
-                    <x-search-bar :query="$query ?? ''" />
-                </div>
-
-                {{-- Résultats --}}
-                <div class="px-3 flex-grow-1 overflow-auto">
-                    @if(!empty($query))
-                        <h5>Résultats pour : "{{ $query }}"</h5>
-                    @endif
-
-                    @if(isset($users) && $users->isNotEmpty())
-                        <ul class="list-group">
-                            @foreach($users as $user)
-                                <li class="list-group-item">
-                                    <a href="{{ route('user.show', $user->id) }}">
-                                        {{ $user->name }} {{ $user->surname }}
-                                        - {{ $user->address->city ?? '' }} ({{ $user->address->postcode ?? '' }})
+                {{-- Recherche + Service à la une --}}
+                <div class="row mb-4">
+                    <div class="col-12 col-md-8 mb-3 mb-md-0">
+                        <x-search-bar :query="$query ?? ''" />
+                    </div>
+                    <div class="col-12 col-md-4">
+                        {{-- Catégorie à la une --}}
+                        @if($highlightedCategory)
+                            <div class="card featured-card hover-card text-center mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $highlightedCategory->name }}</h5>
+                                    <p class="card-text">{{ $highlightedCategory->description ?? '' }}</p>
+                                    <img src="{{ asset('storage/categories/' . $highlightedCategory->image) }}"
+                                         alt="{{ $highlightedCategory->name }}"
+                                         class="img-fluid rounded mb-3">
+                                    <a href="{{ route('categories.show', $highlightedCategory->id) }}" class="btn btn-primary">
+                                        Voir la catégorie
                                     </a>
-                                    @if($user->categories->isNotEmpty())
-                                        <p class="mb-0">Catégorie(s) :
-                                            @foreach($user->categories as $category)
-                                                {{ $category->name }}@if(!$loop->last), @endif
-                                            @endforeach
-                                        </p>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        <div class="mt-3">
-                            <x-pagination :items="$users" />
-                        </div>
-                    @else
-                        <p>Aucun provider trouvé pour "{{ $query ?? 'tous' }}"</p>
-                    @endif
-
-                    @if(session('success'))
-                        <div class="alert alert-success mt-3">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <x-login-toggle />
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-secondary text-center mb-4">
+                                Aucune catégorie mise en avant pour le moment.
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
-            </div> {{-- /Contenu principal --}}
-        </div> {{-- /row --}}
-    </div> {{-- /container-fluid --}}
+                {{-- Partenaires récents --}}
+                <div class="row mb-4 partners-row">
+                    @foreach(range(1,4) as $i)
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="card partner-card hover-card d-flex align-items-center justify-content-center">
+                                Partenaire récent
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Résultats recherche --}}
+                @if(!empty($query))
+                    <h5 class="mb-3">Résultats pour : "{{ $query }}"</h5>
+                @endif
+
+                @if(isset($users) && $users->isNotEmpty())
+                    <ul class="list-group mb-3 user-list">
+                        @foreach($users as $user)
+                            <li class="list-group-item d-flex align-items-center justify-content-between">
+                                <a href="{{ route('user.show', $user->id) }}" class="fw-bold">
+                                    {{ $user->name }} {{ $user->surname }}
+                                </a>
+                                <span class="text-muted ms-2">{{ $user->address->postcode ?? '' }}</span>
+                                @if($user->categories->isNotEmpty())
+                                    <span class="badge bg-primary ms-2">{{ $user->categories->first()->name }}</span>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                    <div>
+                        <x-pagination :items="$users" />
+                    </div>
+                @endif
+
+            </main>
+        </div>
+    </div>
+
 @endsection

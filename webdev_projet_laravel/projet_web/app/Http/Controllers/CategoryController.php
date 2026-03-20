@@ -25,7 +25,8 @@ class CategoryController extends Controller
             $categories = $this->categoryRepository->index();
 
             $users = $this->userRepository->search($query, 3);
-
+            $highlightedCategory = $this->categoryRepository->getHighlighted()->first();
+// Récupère uniquement la première catégorie mise en avant
             $sliderImages = [
                 'bienetre1.jpg',
                 'bienetre2.jpg',
@@ -36,7 +37,8 @@ class CategoryController extends Controller
                 'categories',
                 'sliderImages',
                 'users',
-                'query'
+                'query',
+                'highlightedCategory'
             ));
 
         } catch (\Exception $e) {

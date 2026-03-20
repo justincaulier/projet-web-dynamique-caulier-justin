@@ -1,20 +1,30 @@
-<div class="slider-container mb-6 relative w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded">
-    @foreach($images as $img)
-        <div class="slide w-full h-full">
-            <img src="{{ asset('images/' . $img) }}" alt="Slider image" class="w-full h-full object-cover rounded">
-        </div>
-    @endforeach
-</div>
+<div id="mainCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
 
-<script>
-    let slideIndex = 0;
-    function showSlides() {
-        const slides = document.querySelectorAll('.slide');
-        slides.forEach(slide => slide.style.display = 'none');
-        slideIndex++;
-        if(slideIndex > slides.length) slideIndex = 1;
-        slides[slideIndex-1].style.display = 'block';
-        setTimeout(showSlides, 3000);
-    }
-    document.addEventListener('DOMContentLoaded', showSlides);
-</script>
+    {{-- Indicateurs --}}
+    <div class="carousel-indicators">
+        @foreach($images as $index => $image)
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ $index }}"
+                    @if($index === 0) class="active" aria-current="true" @endif
+                    aria-label="Slide {{ $index + 1 }}"></button>
+        @endforeach
+    </div>
+
+    {{-- Slides --}}
+    <div class="carousel-inner">
+        @foreach($images as $index => $image)
+            <div class="carousel-item @if($index === 0) active @endif">
+                <img src="{{ asset('storage/sliders/' . $image) }}" class="d-block w-100 carousel-img" alt="Slide {{ $index + 1 }}">
+            </div>
+        @endforeach
+    </div>
+
+    {{-- Contrôles --}}
+    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Précédent</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Suivant</span>
+    </button>
+</div>

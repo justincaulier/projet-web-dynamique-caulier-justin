@@ -1,48 +1,86 @@
-<h1>Gestion des catégories</h1>
+<div class="container mt-5">
 
-<a href="{{ route('admin.categories.create') }}">Créer une catégorie</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des catégories</h1>
 
-<table border="1">
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-success">
+            + Créer une catégorie
+        </a>
+    </div>
 
-    <tr>
-        <th>Nom</th>
-        <th>Actions</th>
-    </tr>
+    <div class="card shadow">
 
-    @foreach($categories as $category)
+        <div class="card-body">
 
-        <div>
+            <table class="table table-striped table-hover align-middle">
 
-            <strong>{{ $category->name }}</strong>
+                <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th width="350">Actions</th>
+                </tr>
+                </thead>
 
-            <form method="POST" action="{{ route('admin.categories.destroy', $category->id) }}">
-                @csrf
-                @method('DELETE')
+                <tbody>
 
-                <select name="transfer_category" required>
+                @foreach($categories as $category)
 
-                    @foreach($categories as $cat)
+                    <tr>
 
-                        @if($cat->id !== $category->id)
+                        <td>
+                            <strong>{{ $category->name }}</strong>
+                        </td>
 
-                            <option value="{{ $cat->id }}">
-                                {{ $cat->name }}
-                            </option>
+                        <td>
 
-                        @endif
+                            <div class="d-flex gap-2">
 
-                    @endforeach
+                                <!-- Modifier -->
+                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-primary btn-sm">
+                                    Modifier
+                                </a>
 
-                </select>
+                                <!-- Supprimer -->
+                                <form method="POST" action="{{ route('admin.categories.destroy', $category->id) }}" class="d-flex gap-2">
+                                    @csrf
+                                    @method('DELETE')
 
-                <button type="submit">
-                    Supprimer
-                </button>
+                                    <select name="transfer_category" class="form-select form-select-sm" required>
 
-            </form>
+                                        @foreach($categories as $cat)
+
+                                            @if($cat->id !== $category->id)
+
+                                                <option value="{{ $cat->id }}">
+                                                    Transférer vers : {{ $cat->name }}
+                                                </option>
+
+                                            @endif
+
+                                        @endforeach
+
+                                    </select>
+
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Supprimer
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+                </tbody>
+
+            </table>
 
         </div>
 
-    @endforeach
+    </div>
 
-</table>
+</div>

@@ -2,16 +2,18 @@
 
 namespace App\View\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-
 
 class Slider extends Component
 {
     public $images;
 
-    public function __construct($images)
+    /**
+     * Create a new component instance.
+     *
+     * @param array $images
+     */
+    public function __construct(array $images)
     {
         $this->images = $images;
     }
@@ -21,4 +23,3 @@ class Slider extends Component
         return view('components.slider');
     }
 }
-
